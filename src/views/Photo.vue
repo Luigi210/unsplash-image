@@ -3,25 +3,32 @@ import {ref, onMounted, reactive} from "vue"
 import like from "../assets/like_white.svg"
 import download from "../assets/download.svg"
 import {useRoute} from "vue-router"
+import store from "../storage"
 
 const query = reactive({})
-// const isLoading = ref(true)
 const route = useRoute()
 const id = ref(route.params.id)
+const isLiked = ref(false)
 
-console.log(id.value)
 onMounted( async () => {
   if (id.value){
-    console.log("mounted", id.value, query.value)
     const res = await fetch(`https://api.unsplash.com/photos/${id.value}/?client_id=${'N5k9c1xKpNnyFOtWie2TufAPe70SnNObJGffGjAnWy0'}`)
     const resp = await res.json();
     query.value = resp;
-    // isLoading.value = false;
-    console.log(resp)
+    isLiked.value = store.state.favorites.filter(st => st.id === query.value.id).length ? true : false
   }
 })
 
-// console.log(query.value)
+const addToFavorites = (photo) => {
+  store.dispatch('addToFavs', photo)
+  isLiked.value = true
+}
+
+const removeFromFavorites = (photo) => {
+  store.dispatch('removeFromFavs', photo)
+  isLiked.value = false
+}
+
 </script>
 
 <template>
@@ -35,11 +42,14 @@ onMounted( async () => {
         <img :src="query.value?.user.profile_image.small"/>
         <div class="profile">
           <h2>{{ query.value?.user.name }}</h2>
-          <span>{{ query.value?.user.username }}</span>
+          <span>@{{ query.value?.user.username }}</span>
         </div>
       </div>
       <div class="like-download">
-        <button class="like">
+        <button
+         :style="{ 'backgroundColor': isLiked.valueOf() ? 'red' : '#fff'}"
+         @click="isLiked.valueOf() ? removeFromFavorites(query.value) : addToFavorites(query.value)"
+         class="like">
           <img :src="like"/>
         </button>
         <button class="download">
@@ -51,6 +61,11 @@ onMounted( async () => {
     <div class="image">
       <img
         :src="query.value?.urls?.regular"
+      />
+    </div>
+    <div class="image-xs">
+      <img
+        :src="query.value?.urls?.small"
       />
     </div>
   </div>
@@ -132,5 +147,52 @@ onMounted( async () => {
   }
   .image img {
     height: 100%;
+  }
+
+  .image-xs {
+    display: none;
+  }
+
+  @media (max-width: 720px) {
+    .background-blur {
+      background: none !important;
+      padding: 20px 10px;
+      opacity: 1;
+    }
+
+    .avatar-like-download {
+      margin: 0;
+    }
+    .avatar {
+      align-items: center;
+    }
+    .image {
+      display: none;
+    }
+    .image-xs {
+      display: block;
+    }
+    .image-xs img {
+      width: 100%;
+    }
+
+    .profile h2 {
+      color: #000;
+      font-size: 18px;
+    }
+
+    .profile span {
+      font-size: 14px;
+      color: #BDBDBD;
+    }
+    .download {
+      width: 45px !important;
+    }
+    .download span {
+      display: none;
+    }
+    .like {
+      border: 1px solid !important;
+    }
   }
 </style>

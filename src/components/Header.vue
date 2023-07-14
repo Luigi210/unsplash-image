@@ -1,13 +1,13 @@
 <template>
   <div class="main-header">
     <div class="header">
-      <a href="/">
+      <RouterLink to="/">
         <img :src="logo" class="logo"/>
-      </a>
-      <a href="/favs" class="favs">
+      </RouterLink>
+      <RouterLink to="/favs" class="favs">
         <img :src="like"/>
         <span>Избранное</span>
-      </a>
+      </RouterLink>
     </div>
   </div>
 </template>
@@ -48,4 +48,13 @@
     font-family: Arial, Helvetica, sans-serif;  
   }
 
+  @media (max-width: 720px) {
+    .header {
+      padding: 20px 15px;
+    }
+
+    .favs span {
+      display: none;
+    }
+  }
 </style>

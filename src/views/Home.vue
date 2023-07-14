@@ -27,7 +27,6 @@
   }
 
   watchEffect(() => {
-    // console.log(newV, oldV)
     if(search.value.length !== 0) fetchSearchPics(search)
   })
 
@@ -44,16 +43,13 @@
   </div>
   {{search}}
   <div class="pics-block">
-    <!-- <div class="pics" v-for="pic in pictures" v-bind:key="pic.id"> -->
       <div
-        :to="pic.id"
         v-for="pic in pictures" 
         v-bind:key="pic.id"
         @click="router.push(`${pic.id}`)"  
       >
         <img :src="pic.urls.small"/>
       </div>
-    <!-- </div> -->
   </div>
 
 </template>
@@ -101,5 +97,22 @@
   .pics-block div > img {
     width: 100%;
     height: 400px;
+  }
+
+  @media (max-width: 720px) {
+    .input-search {
+      width: 85% !important;
+    }
+    .pics-block {
+      padding: 20px 15px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .pics-block div {
+      width: 100%;
+    }
+    
   }
 </style>
